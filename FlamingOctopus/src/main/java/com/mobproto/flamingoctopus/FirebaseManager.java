@@ -1,5 +1,10 @@
 package com.mobproto.flamingoctopus;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,12 +17,34 @@ public class FirebaseManager {
     Long score;
     ArrayList<HashMap<String, String>> contacts;
 
+
     public FirebaseManager(String name, String number, Long score, ArrayList<HashMap<String, String>> contacts) {
         this.name = name;
         this.number = number;
         this.score = score;
         this.contacts = contacts;
     }
+
+    public void setup() {
+        //Initialize firebase connection
+        // Create a reference to a Firebase location
+        Firebase ref = new Firebase("https://myapp.firebaseIO-demo.com/");
+
+// Write data to Firebase
+        ref.setValue("Do you have data? You'll love Firebase.");
+
+// Read data and react to changes
+        ref.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot snap) {
+                System.out.println(snap.getName() + " -> " + snap.getValue());
+            }
+
+            @Override public void onCancelled(FirebaseError e) { }
+        });
+    }
+
 
     public void populateScores() {
         //modifies contacts to add public scores to array list

@@ -11,6 +11,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="firebase-client-jvm-LATEST (2)" level="project" />
+    <orderEntry type="library" name="firebase" level="project" />
   </component>
 </module>
 
