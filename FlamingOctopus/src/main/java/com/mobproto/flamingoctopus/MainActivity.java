@@ -91,6 +91,7 @@ public class MainActivity extends ActionBarActivity {
         contacts = getContacts();
 
         FirebaseManager manager = new FirebaseManager(number, contacts);
+        manager.setup();
 
     }
 
@@ -146,6 +147,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public  String getPhoneNumber(Context context) {
+        //Should raise exception if phone number not found -- prompt user to manually enter phone number
         TelephonyManager mTelephonyMgr;
         mTelephonyMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String num = mTelephonyMgr.getLine1Number();
@@ -153,6 +155,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private String fillPhoneNumber(String num) {
+        //clean up phone number string
         try{
             if (num != null && num.length() > 0) {
                 if (num.length() >= 9) {
@@ -174,8 +177,10 @@ public class MainActivity extends ActionBarActivity {
         return null;
     }
 
-//    @TODO: Definitely needs to be async -- takes way too long at the moment
+//    @TODO: Perhaps needs to be async -- takes a little while to load at first
+
     private ArrayList<HashMap<String,String>> getContacts() {
+        //get full list of names and phone numbers from phone contacts
         ArrayList<HashMap<String,String>> contactData=new ArrayList<HashMap<String,String>>();
         ContentResolver cr = getContentResolver();
         Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI,null, null, null, null);
