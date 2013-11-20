@@ -89,7 +89,7 @@ public class MainActivity extends ActionBarActivity {
         String number = getPhoneNumber(getApplicationContext());
         Log.d("PHONE NUMBER:", number);
         contacts = getContacts();
-
+        Log.d("PAST CONTACTS:", "yeah");
         FirebaseManager manager = new FirebaseManager(number, contacts);
         manager.setup();
 
@@ -213,14 +213,19 @@ public class MainActivity extends ActionBarActivity {
                     }
                     phones.close();
                 }
-            }catch(Exception e){}
+            }catch(Exception e){
+                Log.d("Error triggered", "!");
+                e.printStackTrace();
+            }
         }
+        Log.d("Contacts", "compiled");
         for (int i=0; i<contactData.size(); i++) {
             HashMap<String, String> map = contactData.get(i);
             for (HashMap.Entry<String, String> entry : map.entrySet()) {
                 Log.d("HashMap Entry", "Key = " + entry.getKey() + ", Value = " + entry.getValue());
             }
         }
+        Log.d("Contacts", "printed");
         return contactData;
     }
 
