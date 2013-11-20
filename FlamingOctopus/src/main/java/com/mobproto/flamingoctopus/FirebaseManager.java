@@ -16,6 +16,7 @@ public class FirebaseManager {
     String number;
     Long score;
     ArrayList<HashMap<String, String>> contacts;
+    Firebase ref;
 
 
     public FirebaseManager(String name, String number, Long score, ArrayList<HashMap<String, String>> contacts) {
@@ -28,12 +29,13 @@ public class FirebaseManager {
     public void setup() {
         //Initialize firebase connection
         // Create a reference to a Firebase location
-        Firebase ref = new Firebase("https://myapp.firebaseIO-demo.com/");
+        Firebase ref = new Firebase("https://flamingoctopus.firebaseIO.com/");
+        this.ref = ref;
 
-// Write data to Firebase
-        ref.setValue("Do you have data? You'll love Firebase.");
+//        // Write data to Firebase
+//        ref.setValue("Do you have data? You'll love Firebase.");
 
-// Read data and react to changes
+        // Read data and react to changes
         ref.addValueEventListener(new ValueEventListener() {
 
             @Override
