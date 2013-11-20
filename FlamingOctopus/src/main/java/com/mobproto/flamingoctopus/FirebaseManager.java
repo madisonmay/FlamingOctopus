@@ -3,6 +3,7 @@ package com.mobproto.flamingoctopus;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.FirebaseException;
 import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ public class FirebaseManager {
     Long score;
     ArrayList<HashMap<String, String>> contacts;
     Firebase ref;
+    Firebase users;
+    Firebase user;
 
 
     public FirebaseManager(String number, ArrayList<HashMap<String, String>> contacts) {
@@ -28,26 +31,48 @@ public class FirebaseManager {
         // Create a reference to a Firebase location
         Firebase ref = new Firebase("https://flamingoctopus.firebaseIO.com/");
         this.ref = ref;
+        this.users = ref.child("users");
+        this.user = users.child(number);
 
-//        // Write data to Firebase
-//        ref.setValue("Do you have data? You'll love Firebase.");
-
-        // Read data and react to changes
-        ref.addValueEventListener(new ValueEventListener() {
-
+        // Set score to 0 if user does not have score already
+        user.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snap) {
-                System.out.println(snap.getName() + " -> " + snap.getValue());
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot == null) {
+                    user.child("score").setValue(0);
+                    score = 0L;
+                } else {
+                    score = (Long) snapshot.getValue();
+                }
             }
 
-            @Override public void onCancelled(FirebaseError e) { }
+            @Override
+            public void onCancelled(FirebaseError e) {
+            }
         });
-
-        //retrieve score from remote db and store it locally
     }
 
 
     public void populateScores() {
+        //Must be called before getTopNScores
+        for (final HashMap<String, String> contact: contacts) {
+            users.child(contact.get("number")).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot == null) {
+                        user.child("score").setValue(0);
+                        contact.put("score", "0");
+                    } else {
+                        score = (Long) snapshot.getValue();
+                        contact.put("score", String.valueOf(score));
+                    }
+                }
+
+                @Override
+                public void onCancelled(FirebaseError e) {
+                }
+            });
+        }
         //modifies contacts to add public scores to array list
     }
 
@@ -59,7 +84,13 @@ public class FirebaseManager {
 
     public boolean increment() {
         //increments users score by one when note is completed
-        return true; //if successful
+        try {
+            user.setValue(score+1);
+            return true; //if successful
+        } catch (FirebaseException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 

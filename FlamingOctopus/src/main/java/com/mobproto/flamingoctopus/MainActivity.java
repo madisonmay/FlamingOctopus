@@ -148,10 +148,15 @@ public class MainActivity extends ActionBarActivity {
 
     public  String getPhoneNumber(Context context) {
         //Should raise exception if phone number not found -- prompt user to manually enter phone number
-        TelephonyManager mTelephonyMgr;
-        mTelephonyMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        String num = mTelephonyMgr.getLine1Number();
-        return fillPhoneNumber(num);
+        try {
+            TelephonyManager mTelephonyMgr;
+            mTelephonyMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            String num = mTelephonyMgr.getLine1Number();
+            return fillPhoneNumber(num);
+        } catch (Exception e) {
+            //hack for testing some functionality on emulator
+            return "5402095219";
+        }
     }
 
     private String fillPhoneNumber(String num) {
