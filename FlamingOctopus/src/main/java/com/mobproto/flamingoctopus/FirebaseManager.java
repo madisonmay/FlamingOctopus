@@ -12,17 +12,14 @@ import java.util.HashMap;
  * Created by mmay on 11/19/13.
  */
 public class FirebaseManager {
-    String name;
     String number;
     Long score;
     ArrayList<HashMap<String, String>> contacts;
     Firebase ref;
 
 
-    public FirebaseManager(String name, String number, Long score, ArrayList<HashMap<String, String>> contacts) {
-        this.name = name;
+    public FirebaseManager(String number, ArrayList<HashMap<String, String>> contacts) {
         this.number = number;
-        this.score = score;
         this.contacts = contacts;
     }
 
@@ -45,6 +42,8 @@ public class FirebaseManager {
 
             @Override public void onCancelled(FirebaseError e) { }
         });
+
+        //retrieve score from remote db and store it locally
     }
 
 

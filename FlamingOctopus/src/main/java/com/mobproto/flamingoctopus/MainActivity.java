@@ -90,6 +90,8 @@ public class MainActivity extends ActionBarActivity {
         Log.d("PHONE NUMBER:", number);
         contacts = getContacts();
 
+        FirebaseManager manager = new FirebaseManager(number, contacts);
+
     }
 
 
