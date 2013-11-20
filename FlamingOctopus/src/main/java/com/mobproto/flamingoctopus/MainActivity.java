@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.provider.ContactsContract;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -19,8 +20,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -29,8 +32,7 @@ public class MainActivity extends ActionBarActivity {
 
     SectionsPagerAdapter sectionsPagerAdapter;
     ViewPager viewPager;
-
-
+    ArrayList<HashMap<String, String>> contacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +88,7 @@ public class MainActivity extends ActionBarActivity {
 
         String number = getPhoneNumber(getApplicationContext());
         Log.d("PHONE NUMBER:", number);
-        ArrayList<HashMap<String, String>> contacts = getContacts();
+        contacts = getContacts();
     }
 
 
@@ -146,6 +148,7 @@ public class MainActivity extends ActionBarActivity {
         String num = mTelephonyMgr.getLine1Number();
         return fillPhoneNumber(num);
     }
+
     private String fillPhoneNumber(String num) {
         try{
             if (num != null && num.length() > 0) {

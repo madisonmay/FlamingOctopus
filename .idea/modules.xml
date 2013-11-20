@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/FlamingOctopus/FlamingOctopus.iml" filepath="$PROJECT_DIR$/FlamingOctopus/FlamingOctopus.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FlamingOctopus.iml" filepath="$PROJECT_DIR$/FlamingOctopus.iml" />
       <module fileurl="file://$PROJECT_DIR$/FlamingOctopus/FlamingOctopus-FlamingOctopus.iml" filepath="$PROJECT_DIR$/FlamingOctopus/FlamingOctopus-FlamingOctopus.iml" />
-      <module fileurl="file://$PROJECT_DIR$/FlamingOctopusProject.iml" filepath="$PROJECT_DIR$/FlamingOctopusProject.iml" />
     </modules>
   </component>
 </project>
