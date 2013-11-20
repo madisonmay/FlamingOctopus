@@ -1,10 +1,14 @@
 package com.mobproto.flamingoctopus;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -20,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -33,12 +38,45 @@ public class MainActivity extends ActionBarActivity {
     SectionsPagerAdapter sectionsPagerAdapter;
     ViewPager viewPager;
     ArrayList<HashMap<String, String>> contacts;
+    String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final ActionBar actionBar = getActionBar();
+
+        final SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        username = prefs.getString("username", null);
+
+        if (username == null) {
+            EditText input = new EditText(this);
+            input.setId(1000);
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setView(input).setTitle("Enter your full name!")
+                    .setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    EditText theInput = (EditText) ((AlertDialog) dialog)
+                                            .findViewById(1000);
+                                    String enteredText = theInput.getText()
+                                            .toString();
+                                    if (!enteredText.equals("")) {
+                                        SharedPreferences.Editor editor = prefs
+                                                .edit();
+                                        editor.putString("username",
+                                                enteredText);
+                                        editor.commit();
+                                        username = enteredText;
+                                    }
+                                }
+                            }).create();
+            dialog.show();
+        }
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -91,7 +129,8 @@ public class MainActivity extends ActionBarActivity {
         contacts = getContacts();
         Log.d("PAST CONTACTS:", "yeah");
         FirebaseManager manager = new FirebaseManager(number, contacts);
-        manager.setup();
+        manager.setup(username);
+        manager.populateScores();
 
     }
 

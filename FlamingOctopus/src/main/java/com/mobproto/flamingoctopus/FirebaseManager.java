@@ -28,7 +28,7 @@ public class FirebaseManager {
         this.contacts = contacts;
     }
 
-    public void setup() {
+    public void setup(final String username) {
         //Initialize firebase connection
         // Create a reference to a Firebase location
         Log.d("Setup", "Triggered");
@@ -44,9 +44,10 @@ public class FirebaseManager {
                 Log.d("SNAPSHOT", String.valueOf(snapshot));
                 if (snapshot.getValue() == null) {
                     user.child("score").setValue(0);
+                    user.child("name").setValue(username);
                     score = 0L;
                 } else {
-                    score = (Long) snapshot.getValue();
+                    score = (Long) ((HashMap) snapshot.getValue()).get("score");
                 }
             }
 
@@ -63,12 +64,14 @@ public class FirebaseManager {
             users.child(contact.get("number")).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot == null) {
-                        user.child("score").setValue(0);
-                        contact.put("score", "0");
+                    if (snapshot.getValue() == null) {
+                        Log.d("Not on firebase: ", contact.get("number"));
+//                        user.child("score").setValue(0);
+//                        contact.put("score", "0");
                     } else {
-                        score = (Long) snapshot.getValue();
+                        score = (Long) ((HashMap) snapshot.getValue()).get("score");
                         contact.put("score", String.valueOf(score));
+                        Log.d("Friend's Score:", String.valueOf(score));
                     }
                 }
 
