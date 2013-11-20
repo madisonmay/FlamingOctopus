@@ -89,6 +89,7 @@ public class MainActivity extends ActionBarActivity {
         String number = getPhoneNumber(getApplicationContext());
         Log.d("PHONE NUMBER:", number);
         contacts = getContacts();
+
     }
 
 
