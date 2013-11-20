@@ -1,6 +1,10 @@
 package com.mobproto.flamingoctopus;
 
 import android.app.ActionBar;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
+import android.provider.ContactsContract;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
@@ -8,6 +12,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class MainActivity extends ActionBarActivity {
@@ -75,6 +83,10 @@ public class MainActivity extends ActionBarActivity {
                             .setText("Tab " + (i + 1))
                             .setTabListener(tabListener));
         }
+
+        String number = getPhoneNumber(getApplicationContext());
+        Log.d("PHONE NUMBER:", number);
+        ArrayList<HashMap<String, String>> contacts = getContacts();
     }
 
 
@@ -127,6 +139,75 @@ public class MainActivity extends ActionBarActivity {
             return null;
         }
     }
+
+    public  String getPhoneNumber(Context context) {
+        TelephonyManager mTelephonyMgr;
+        mTelephonyMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        String num = mTelephonyMgr.getLine1Number();
+        return fillPhoneNumber(num);
+    }
+    private String fillPhoneNumber(String num) {
+        try{
+            if (num != null && num.length() > 0) {
+                if (num.length() >= 9) {
+                    num = num.replaceAll("\\D", "");
+                    if (num.substring(0, 1).equals("8")) {
+                        num = "+3" + num;
+                    } else if (num.substring(0, 1).equals("0")) {
+                        num = "+38" + num;
+                    } else if (num.substring(0, 1).equals("3")) {
+                        num = "+" + num;
+                    }
+                }
+                return num;
+            }
+
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+//    @TODO: Definitely needs to be async -- takes way too long at the moment
+    private ArrayList<HashMap<String,String>> getContacts() {
+        ArrayList<HashMap<String,String>> contactData=new ArrayList<HashMap<String,String>>();
+        ContentResolver cr = getContentResolver();
+        Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI,null, null, null, null);
+        while (cursor.moveToNext()) {
+            try{
+                String contactId = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                String name=cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                String hasPhone = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+                if (Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
+                    Cursor phones = getContentResolver().query( ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = "+ contactId, null, null);
+                    while (phones.moveToNext()) {
+                        String phoneNumber = phones.getString(phones.getColumnIndex( ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        HashMap<String,String> map=new HashMap<String,String>();
+                        map.put("name", name);
+
+                        //Normalize phone numbers to use as ids
+                        phoneNumber = phoneNumber.replaceAll("[^0-9]","");
+                        if (phoneNumber.length() > 10) {
+                            phoneNumber = phoneNumber.substring(phoneNumber.length() - 10);
+                        } else if (phoneNumber.length() < 10) {
+                            phoneNumber = "540" + phoneNumber;
+                        }
+                        map.put("number", phoneNumber);
+                        contactData.add(map);
+                    }
+                    phones.close();
+                }
+            }catch(Exception e){}
+        }
+        for (int i=0; i<contactData.size(); i++) {
+            HashMap<String, String> map = contactData.get(i);
+            for (HashMap.Entry<String, String> entry : map.entrySet()) {
+                Log.d("HashMap Entry", "Key = " + entry.getKey() + ", Value = " + entry.getValue());
+            }
+        }
+        return contactData;
+    }
+
 
     /**
      * A placeholder fragment containing a simple view.
