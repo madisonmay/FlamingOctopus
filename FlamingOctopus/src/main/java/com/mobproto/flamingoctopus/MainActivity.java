@@ -20,7 +20,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -121,11 +124,9 @@ public class MainActivity extends ActionBarActivity {
         };
 
         // Add 2 tabs, specifying the tab's text and TabListener
+        ArrayList<String> tabs = new ArrayList<String>(Arrays.asList("Now", "Later", "Friends"));
         for (int i = 0; i < 3; i++) {
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setText("Tab " + (i + 1))
-                            .setTabListener(tabListener));
+            actionBar.addTab(actionBar.newTab().setText(tabs.get(i)).setTabListener(tabListener));
         }
 
   
@@ -134,6 +135,7 @@ public class MainActivity extends ActionBarActivity {
             //for debug purposes only -- remove eventually
             number = "2012807565";
         }
+
         Log.d("PHONE NUMBER:", number);
         contacts = getContacts();
         numbers = getNumbers(contacts);
