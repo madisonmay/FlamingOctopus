@@ -10,6 +10,7 @@ import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by mmay on 11/19/13.
@@ -21,6 +22,7 @@ public class FirebaseManager {
     public Firebase ref;
     public Firebase users;
     public Firebase user;
+    public ArrayList<String> friends;
 
 
     public FirebaseManager(String number, ArrayList<HashMap<String, String>> contacts) {
@@ -41,7 +43,6 @@ public class FirebaseManager {
         user.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                Log.d("SNAPSHOT", String.valueOf(snapshot));
                 if (snapshot.getValue() == null) {
                     user.child("score").setValue(0);
                     user.child("name").setValue(username);
@@ -58,36 +59,30 @@ public class FirebaseManager {
     }
 
 
-    public void populateScores() {
-        //Must be called before getTopNScores
-        for (final HashMap<String, String> contact: contacts) {
-            users.child(contact.get("number")).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot.getValue() == null) {
-                        Log.d("Not on firebase: ", contact.get("number"));
-//                        user.child("score").setValue(0);
-//                        contact.put("score", "0");
-                    } else {
-                        score = (Long) ((HashMap) snapshot.getValue()).get("score");
-                        contact.put("score", String.valueOf(score));
-                        Log.d("Friend's Score:", String.valueOf(score));
+    public void getActiveUsers(final ArrayList<String> phoneNumbers) {
+        users.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                Object value = snapshot.getValue();
+                if (value == null) {
+                   //users ref doesn't exist
+                    Log.d("Serious error", "abort, abort!");
+                } else {
+                    for (String phone: phoneNumbers) {
+                        Object user = ((Map) value).get(phone);
+                        if (user != null) {
+                            Log.d("Active User", phone);
+                            MainActivity.activeUsers.add(phone);
+                        }
                     }
+                    MainActivity.usersFound();
                 }
+            }
 
-                @Override
-                public void onCancelled(FirebaseError e) {
-                }
-            });
-        }
-        //modifies contacts to add public scores to array list
-    }
-
-
-    public ArrayList<HashMap<String, String>> getTopNScores() {
-        //Returns top n scores from this.contacts
-        //Must be called after populating local arraylist
-        return null;
+            @Override
+            public void onCancelled(FirebaseError e) {
+            }
+        });
     }
 
     public boolean increment() {

@@ -20,7 +20,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -30,11 +29,16 @@ public class MainActivity extends ActionBarActivity {
     SectionsPagerAdapter sectionsPagerAdapter;
     ViewPager viewPager;
     ArrayList<HashMap<String, String>> contacts;
+    ArrayList<String> numbers = new ArrayList<String>();
+    public static ArrayList<String> activeUsers = new ArrayList<String>();
     String username;
+    String number;
+    static boolean locked;
     public TasksDbAdapter dbAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        locked = true;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final ActionBar actionBar = getActionBar();
@@ -45,6 +49,14 @@ public class MainActivity extends ActionBarActivity {
         final SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(this);
         username = prefs.getString("username", null);
+        number = prefs.getString("number", null);
+
+        if (number == null) {
+            number = getPhoneNumber(getApplicationContext());
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("number", number);
+            editor.commit();
+        }
 
         if (username == null) {
             EditText input = new EditText(this);
@@ -120,14 +132,26 @@ public class MainActivity extends ActionBarActivity {
                             .setTabListener(tabListener));
         }
 
-        String number = getPhoneNumber(getApplicationContext());
+  
+        if(number == null)
+        {
+            //for debug purposes only -- remove eventually
+            number = "2012807565";
+        }
         Log.d("PHONE NUMBER:", number);
         contacts = getContacts();
+        numbers = getNumbers(contacts);
         Log.d("PAST CONTACTS:", "yeah");
-//        FirebaseManager manager = new FirebaseManager(number, contacts);
-//        manager.setup(username);
-//        manager.populateScores();
+        FirebaseManager manager = new FirebaseManager(number, contacts);
+        manager.setup(username);
+        manager.getActiveUsers(numbers);
+    }
 
+    static void usersFound() {
+        for (String phone: activeUsers) {
+            Log.d("Friends number", phone);
+        }
+        locked = false;
     }
 
 
@@ -234,6 +258,14 @@ public class MainActivity extends ActionBarActivity {
     }
 
 //    @TODO: Perhaps needs to be async -- takes a little while to load at first
+
+    private ArrayList<String> getNumbers(ArrayList<HashMap<String, String>> contacts) {
+        ArrayList<String> numbers = new ArrayList<String>();
+        for (HashMap<String, String> contact: contacts) {
+            numbers.add(contact.get("number"));
+        }
+        return numbers;
+    }
 
     private ArrayList<HashMap<String,String>> getContacts() {
         //get full list of names and phone numbers from phone contacts
