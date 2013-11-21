@@ -8,23 +8,27 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 public class LongTermTasksListFragment extends Fragment {
-//    MainActivity activity;
-//
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-//        return rootView;
-//    }
-//
-//    @Override
-//    public void onActivityCreated(Bundle savedInstanceState) {
-//        super.onActivityCreated(savedInstanceState);
-//
-//        activity = (MainActivity) getActivity();
-//
-//        final TasksListCursorAdapter adapter = new TasksListCursorAdapter(getActivity(), activity.dbAdapter.getAllLongTermTasks(), activity.dbAdapter);
-//
-//        ListView listView = (ListView) activity.findViewById(R.id.list);
-//        listView.setAdapter(adapter);
-//    }
+    MainActivity activity;
+    ListView listView;
+    LongTermTasksListCursorAdapter adapter;
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+        activity = (MainActivity) getActivity();
+
+        adapter = new LongTermTasksListCursorAdapter(activity, activity.dbAdapter.getAllLongTermTasks(), activity.dbAdapter);
+        listView = (ListView) rootView.findViewById(R.id.list);
+        listView.setAdapter(adapter);
+
+        return rootView;
+    }
+
+
+    public void updateListView() {
+        adapter.changeCursor(activity.dbAdapter.getAllLongTermTasks());
+        adapter.notifyDataSetChanged();
+    }
 }

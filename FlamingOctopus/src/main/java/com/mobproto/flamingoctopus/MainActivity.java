@@ -7,28 +7,20 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -165,13 +157,13 @@ public class MainActivity extends ActionBarActivity {
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        TasksListFragment longTermFragment;
-        TasksListFragment shortTermFragment;
+        LongTermTasksListFragment longTermFragment;
+        ShortTermTasksListFragment shortTermFragment;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
-            shortTermFragment = new TasksListFragment();
-            longTermFragment = new TasksListFragment();
+            shortTermFragment = new ShortTermTasksListFragment();
+            longTermFragment = new LongTermTasksListFragment();
         }
 
         @Override

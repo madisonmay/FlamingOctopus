@@ -4,16 +4,15 @@ package com.mobproto.flamingoctopus;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-public class TasksListFragment extends Fragment {
+public class ShortTermTasksListFragment extends Fragment {
     MainActivity activity;
     ListView listView;
-    TasksListCursorAdapter adapter;
+    ShortTermTasksListCursorAdapter adapter;
 
 
     @Override
@@ -22,7 +21,7 @@ public class TasksListFragment extends Fragment {
 
         activity = (MainActivity) getActivity();
 
-        adapter = new TasksListCursorAdapter(activity, activity.dbAdapter.getAllTasks(), activity.dbAdapter);
+        adapter = new ShortTermTasksListCursorAdapter(activity, activity.dbAdapter.getAllShortTermTasks(), activity.dbAdapter);
         listView = (ListView) rootView.findViewById(R.id.list);
         listView.setAdapter(adapter);
 
@@ -31,7 +30,7 @@ public class TasksListFragment extends Fragment {
 
 
     public void updateListView() {
-        adapter.changeCursor(activity.dbAdapter.getAllTasks());
+        adapter.changeCursor(activity.dbAdapter.getAllShortTermTasks());
         adapter.notifyDataSetChanged();
     }
 }
