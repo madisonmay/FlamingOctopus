@@ -7,28 +7,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
-
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -38,10 +29,15 @@ public class MainActivity extends ActionBarActivity {
     SectionsPagerAdapter sectionsPagerAdapter;
     ViewPager viewPager;
     ArrayList<HashMap<String, String>> contacts;
+    ArrayList<String> numbers = new ArrayList<String>();
+    public static ArrayList<String> activeUsers = new ArrayList<String>();
     String username;
+    String number;
+    static boolean locked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        locked = true;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final ActionBar actionBar = getActionBar();
@@ -49,6 +45,14 @@ public class MainActivity extends ActionBarActivity {
         final SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(this);
         username = prefs.getString("username", null);
+        number = prefs.getString("number", null);
+
+        if (number == null) {
+            number = getPhoneNumber(getApplicationContext());
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("number", number);
+            editor.commit();
+        }
 
         if (username == null) {
             EditText input = new EditText(this);
@@ -124,15 +128,22 @@ public class MainActivity extends ActionBarActivity {
                             .setTabListener(tabListener));
         }
 
-        String number = getPhoneNumber(getApplicationContext());
         Log.d("PHONE NUMBER:", number);
         contacts = getContacts();
+        numbers = getNumbers(contacts);
         Log.d("PAST CONTACTS:", "yeah");
         FirebaseManager manager = new FirebaseManager(number, contacts);
         manager.setup(username);
-        manager.populateScores();
-
+        manager.getActiveUsers(numbers);
     }
+
+    static void usersFound() {
+        for (String phone: activeUsers) {
+            Log.d("Friends number", phone);
+        }
+        locked = false;
+    }
+
 
 
     @Override
@@ -222,6 +233,14 @@ public class MainActivity extends ActionBarActivity {
     }
 
 //    @TODO: Perhaps needs to be async -- takes a little while to load at first
+
+    private ArrayList<String> getNumbers(ArrayList<HashMap<String, String>> contacts) {
+        ArrayList<String> numbers = new ArrayList<String>();
+        for (HashMap<String, String> contact: contacts) {
+            numbers.add(contact.get("number"));
+        }
+        return numbers;
+    }
 
     private ArrayList<HashMap<String,String>> getContacts() {
         //get full list of names and phone numbers from phone contacts
