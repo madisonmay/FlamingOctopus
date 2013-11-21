@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 
 public class TasksDbAdapter {
@@ -28,8 +29,6 @@ public class TasksDbAdapter {
     public TasksDbAdapter open() {
         dbHelper = new TasksDbHelper(context);
         db = dbHelper.getWritableDatabase();
-        dbHelper.onUpgrade(db, 0, 1);
-        this.createTask("test task", false);
         return this;
     }
 
@@ -43,20 +42,31 @@ public class TasksDbAdapter {
         values.put(COLUMN_LONG_TERM, longTerm ? 1 : 0);
         long id = db.insert(TABLE_NAME, null, values);
 
-        return new Task(id, contents, longTerm);
+
+        Task task = new Task(id, contents, longTerm);
+
+        Log.d("created task", task.toString());
+        return task;
     }
 
-    public boolean deleteNote(Task task) {
+    public boolean deleteTask(Task task) {
         return db.delete(TABLE_NAME, COLUMN_ID + "=" + task.getId(), null) > 0;
     }
 
-    public Task getNote(long id){
+    public Task getTask(long id){
         Cursor cursor = db.query(true, TABLE_NAME, new String[] {COLUMN_ID, COLUMN_CONTENTS, COLUMN_LONG_TERM}, COLUMN_ID + "=" + id, null, null, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
         }
         return taskFromCursor(cursor);
 
+    }
+
+    public void editTask(Task task){
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_CONTENTS, task.contents);
+        values.put(COLUMN_LONG_TERM, task.longTerm ? 1 : 0);
+        db.update(TABLE_NAME, values, COLUMN_ID + "=" + task._id, null);
     }
 
     public static Task taskFromCursor(Cursor cursor){
@@ -69,6 +79,13 @@ public class TasksDbAdapter {
         return db.query(true, TABLE_NAME, new String[] {COLUMN_ID, COLUMN_CONTENTS, COLUMN_LONG_TERM}, null, null, null, null, null, null);
     }
 
+    public Cursor getAllShortTermTasks(){
+        return db.query(true, TABLE_NAME, new String[] {COLUMN_ID, COLUMN_CONTENTS, COLUMN_LONG_TERM}, COLUMN_LONG_TERM + "=0", null, null, null, null, null);
+    }
+
+    public Cursor getAllLongTermTasks(){
+        return db.query(true, TABLE_NAME, new String[] {COLUMN_ID, COLUMN_CONTENTS, COLUMN_LONG_TERM}, COLUMN_LONG_TERM + "=1", null, null, null, null, null);
+    }
 
     private class TasksDbHelper extends SQLiteOpenHelper {
 

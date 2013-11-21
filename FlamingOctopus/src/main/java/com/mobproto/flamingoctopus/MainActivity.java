@@ -20,7 +20,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +36,7 @@ public class MainActivity extends ActionBarActivity {
     String username;
     String number;
     static boolean locked;
+    public TasksDbAdapter dbAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +44,9 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final ActionBar actionBar = getActionBar();
+
+        dbAdapter = new TasksDbAdapter(this);
+        dbAdapter.open();
 
         final SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(this);
@@ -123,7 +126,7 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
-        // Add 2 tabs, specifying the tab's text and TabListener
+        // Add 3 tabs, specifying the tab's text and TabListener
         ArrayList<String> tabs = new ArrayList<String>(Arrays.asList("Now", "Later", "Friends"));
         for (int i = 0; i < 3; i++) {
             actionBar.addTab(actionBar.newTab().setText(tabs.get(i)).setTabListener(tabListener));
@@ -164,26 +167,42 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.add_task) {
+            (new AddTaskDialogFragment()).show(getSupportFragmentManager(), "add task");
+            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void updateListViews() {
+        sectionsPagerAdapter.longTermFragment.updateListView();
+        sectionsPagerAdapter.shortTermFragment.updateListView();
     }
 
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+        LongTermTasksListFragment longTermFragment;
+        ShortTermTasksListFragment shortTermFragment;
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+            shortTermFragment = new ShortTermTasksListFragment();
+            longTermFragment = new LongTermTasksListFragment();
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            if(position == 2)
-            {
+            // Return a PlaceholderFragment (defined as 
+            // a static inner class below).
+            if (position == 0) {
+                return shortTermFragment;
+            } else if (position == 1) {
+                return longTermFragment;
+            } else {
                 return new ScorboardListFragment();
             }
-            return new TasksListFragment();
         }
 
         @Override
@@ -299,32 +318,5 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-//    public static class PlaceholderFragment extends Fragment {
-//
-//        private static final String ARG_SECTION_NUMBER = "section_number";
-//
-//        public static PlaceholderFragment newInstance(int sectionNumber) {
-//            PlaceholderFragment fragment = new PlaceholderFragment();
-//            Bundle args = new Bundle();
-//            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-//            fragment.setArguments(args);
-//            return fragment;
-//        }
-//
-//        public PlaceholderFragment() {
-//        }
-//
-//        @Override
-//        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                                 Bundle savedInstanceState) {
-//            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-//            textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
-//            return rootView;
-//        }
-//    }
 
 }
