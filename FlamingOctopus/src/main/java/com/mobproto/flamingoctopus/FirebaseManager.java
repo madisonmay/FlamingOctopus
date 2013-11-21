@@ -60,29 +60,32 @@ public class FirebaseManager {
 
 
     public void getActiveUsers(final ArrayList<String> phoneNumbers) {
-        users.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                Object value = snapshot.getValue();
-                if (value == null) {
-                   //users ref doesn't exist
-                    Log.d("Serious error", "abort, abort!");
-                } else {
-                    for (String phone: phoneNumbers) {
-                        Object user = ((Map) value).get(phone);
-                        if (user != null) {
-                            Log.d("Active User", phone);
-                            MainActivity.activeUsers.add(phone);
+        if (!MainActivity.locked) {
+            users.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    Object value = snapshot.getValue();
+                    if (value == null) {
+                       //users ref doesn't exist
+                        Log.d("Serious error", "abort, abort!");
+                    } else {
+                        for (String phone: phoneNumbers) {
+                            Object user = ((Map) value).get(phone);
+                            if (user != null) {
+                                Log.d("Active User", phone);
+                                MainActivity.activeUsers.add(phone);
+                            }
                         }
+                        MainActivity.usersFound();
+                        MainActivity.locked = true;
                     }
-                    MainActivity.usersFound();
                 }
-            }
 
-            @Override
-            public void onCancelled(FirebaseError e) {
-            }
-        });
+                @Override
+                public void onCancelled(FirebaseError e) {
+                }
+            });
+        }
     }
 
     public boolean increment() {
