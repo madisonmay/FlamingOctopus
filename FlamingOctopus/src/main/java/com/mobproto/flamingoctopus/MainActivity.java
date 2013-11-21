@@ -117,7 +117,7 @@ public class MainActivity extends ActionBarActivity {
         };
 
         // Add 2 tabs, specifying the tab's text and TabListener
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
             actionBar.addTab(
                     actionBar.newTab()
                             .setText("Tab " + (i + 1))
@@ -125,6 +125,10 @@ public class MainActivity extends ActionBarActivity {
         }
 
         String number = getPhoneNumber(getApplicationContext());
+        if(number == null)
+        {
+            number = "2012807565";
+        }
         Log.d("PHONE NUMBER:", number);
         contacts = getContacts();
         Log.d("PAST CONTACTS:", "yeah");
@@ -161,13 +165,17 @@ public class MainActivity extends ActionBarActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+            if(position == 2)
+            {
+                return new ScorboardListFragment();
+            }
             return new TasksListFragment();
         }
 
         @Override
         public int getCount() {
             // Show 2 total pages.
-            return 2;
+            return 3;
         }
 
         @Override
