@@ -28,8 +28,6 @@ public class TasksDbAdapter {
     public TasksDbAdapter open() {
         dbHelper = new TasksDbHelper(context);
         db = dbHelper.getWritableDatabase();
-        dbHelper.onUpgrade(db, 0, 1);
-        this.createTask("test task", false);
         return this;
     }
 
