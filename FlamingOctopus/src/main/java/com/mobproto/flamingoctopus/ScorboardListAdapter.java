@@ -1,6 +1,7 @@
 package com.mobproto.flamingoctopus;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,7 @@ public class ScorboardListAdapter extends ArrayAdapter {
         super(a, viewResourceId, data);
         this.data = data;
         this.activity = a;
-        Firebase ref = new Firebase("https://flamingoctopus.firebaseIO.com/").child("users");
+        ref = new Firebase("https://flamingoctopus.firebaseIO.com/").child("users");
     }
 
     @Override
@@ -40,14 +41,22 @@ public class ScorboardListAdapter extends ArrayAdapter {
 
         final TextView score = (TextView) v.findViewById(R.id.scoreboardScore);
         final TextView name = (TextView) v.findViewById(R.id.scorboardName);
-        ref.child(data.get(position)).addValueEventListener(new ValueEventListener() {
+        final String item = data.get(position);
+        ref.child(item).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Object value = dataSnapshot.getValue();
-                if( value != null)
-                {
-                    name.setText((String)((Map)value).get("name"));
-                    score.setText((String)((Map)value).get("score"));
+                if (value != null) {
+                    if ((String) ((Map) value).get("name") == null || ((String) ((Map) value).get("name")).isEmpty()) {
+                        name.setText("Opponent");
+                    } else
+                    {
+                        name.setText((String) ((Map) value).get("name"));
+                    }
+                    if (((Map) value).get("score") == null) {
+                        score.setText("0");
+                    } else
+                        score.setText((((Map) value).get("score")).toString());
                 }
             }
 
