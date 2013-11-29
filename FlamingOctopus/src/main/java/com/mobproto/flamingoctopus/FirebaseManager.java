@@ -44,10 +44,12 @@ public class FirebaseManager {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.getValue() == null) {
+                    //new user
                     user.child("score").setValue(0);
                     user.child("name").setValue(username);
                     score = 0L;
                 } else {
+                    //returning user
                     score = (Long) ((HashMap) snapshot.getValue()).get("score");
                 }
             }
@@ -60,6 +62,7 @@ public class FirebaseManager {
 
 
     public void getActiveUsers(final ArrayList<String> phoneNumbers) {
+        //get a list of app users who are in the user's contact list
         if (!MainActivity.locked) {
             users.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -70,9 +73,10 @@ public class FirebaseManager {
                         Log.d("Serious error", "abort, abort!");
                     } else {
                         for (String phone: phoneNumbers) {
-                            Object user = ((Map) value).get(phone);
+                            Object user = ((HashMap) value).get(phone);
                             if (user != null) {
                                 Log.d("Active User", phone);
+                                //add to list of app users who are in users contact list
                                 MainActivity.activeUsers.add(phone);
                             }
                         }
@@ -92,7 +96,7 @@ public class FirebaseManager {
         //increments users score by one when note is completed
         try {
             score++;
-            user.setValue(score);
+            user.child("score").setValue(score);
             return true; //if successful
         } catch (FirebaseException e) {
             e.printStackTrace();

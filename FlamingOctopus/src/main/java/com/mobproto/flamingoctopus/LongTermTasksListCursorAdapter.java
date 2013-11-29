@@ -32,7 +32,7 @@ public class LongTermTasksListCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         final ViewHolder holder;
-        holder = new ViewHolder(TasksDbAdapter.taskFromCursor(cursor), (TextView) view.findViewById(R.id.contents), (Button) view.findViewById(R.id.done_button), (ImageButton) view.findViewById(R.id.make_short_term_button));
+        holder = new ViewHolder(TasksDbAdapter.taskFromCursor(cursor), (TextView) view.findViewById(R.id.contents), (Button) view.findViewById(R.id.done_button), (Button) view.findViewById(R.id.make_short));
         view.setTag(holder);
 
         holder.contentsTextView.setText(holder.task.getContents());
@@ -40,6 +40,9 @@ public class LongTermTasksListCursorAdapter extends CursorAdapter {
             @Override
             public void onClick(View v) {
                 dbAdapter.deleteTask(holder.task);
+
+                //increment user's score in firebase
+                MainActivity.manager.increment();
                 changeCursor(dbAdapter.getAllLongTermTasks());
                 notifyDataSetChanged();
             }
@@ -47,6 +50,8 @@ public class LongTermTasksListCursorAdapter extends CursorAdapter {
         holder.shortTermButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //move task to other list
                 holder.task.longTerm = false;
                 dbAdapter.editTask(holder.task);
                 changeCursor(dbAdapter.getAllLongTermTasks());
@@ -58,12 +63,12 @@ public class LongTermTasksListCursorAdapter extends CursorAdapter {
     }
 
     public class ViewHolder{
-        ImageButton shortTermButton;
+        Button shortTermButton;
         Button doneButton;
         Task task;
         TextView contentsTextView;
 
-        private ViewHolder(Task task, TextView contentsTextView, Button doneButton, ImageButton shortTermButton) {
+        private ViewHolder(Task task, TextView contentsTextView, Button doneButton, Button shortTermButton) {
             this.task = task;
             this.contentsTextView = contentsTextView;
             this.doneButton = doneButton;

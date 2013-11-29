@@ -32,11 +32,15 @@ public class ShortTermTasksListCursorAdapter extends CursorAdapter {
         holder = new ViewHolder(TasksDbAdapter.taskFromCursor(cursor), (TextView) view.findViewById(R.id.contents), (Button) view.findViewById(R.id.done_button));
         view.setTag(holder);
 
+        //update view
         holder.contentsTextView.setText(holder.task.getContents());
         holder.doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dbAdapter.deleteTask(holder.task);
+
+                //update user score on firebase
+                MainActivity.manager.increment();
                 changeCursor(dbAdapter.getAllShortTermTasks());
                 notifyDataSetChanged();
             }

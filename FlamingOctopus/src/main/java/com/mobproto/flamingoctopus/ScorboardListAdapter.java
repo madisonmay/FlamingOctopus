@@ -13,6 +13,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,12 +23,14 @@ import java.util.Map;
 public class ScorboardListAdapter extends ArrayAdapter {
     private List<String> data;
     private Activity activity;
-    private Firebase ref;
+    final private Firebase ref;
 
     public ScorboardListAdapter(Activity a, int viewResourceId, List<String> data){
         super(a, viewResourceId, data);
         this.data = data;
         this.activity = a;
+
+        //kick ass repo name
         ref = new Firebase("https://flamingoctopus.firebaseIO.com/").child("users");
     }
 
@@ -39,25 +42,31 @@ public class ScorboardListAdapter extends ArrayAdapter {
             v = vi.inflate(R.layout.scoreboard_list_item, null);
         }
 
+        //retrieve values from view
         final TextView score = (TextView) v.findViewById(R.id.scoreboardScore);
         final TextView name = (TextView) v.findViewById(R.id.scorboardName);
         final String item = data.get(position);
+
         ref.child(item).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
+                //live updating courtesy of firebase api
                 Object value = dataSnapshot.getValue();
                 if (value != null) {
                     if ((String) ((Map) value).get("name") == null || ((String) ((Map) value).get("name")).isEmpty()) {
                         name.setText("Opponent");
-                    } else
-                    {
+                    } else {
                         name.setText((String) ((Map) value).get("name"));
                     }
                     if (((Map) value).get("score") == null) {
                         score.setText("0");
-                    } else
+                    } else {
                         score.setText((((Map) value).get("score")).toString());
+                    }
                 }
+
+                notifyDataSetChanged();
             }
 
             @Override
@@ -65,9 +74,7 @@ public class ScorboardListAdapter extends ArrayAdapter {
 
             }
         });
-
-        // ...
-
         return v;
     }
+
 }

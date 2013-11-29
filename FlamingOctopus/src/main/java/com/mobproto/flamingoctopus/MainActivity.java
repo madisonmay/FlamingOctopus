@@ -23,6 +23,7 @@ import android.widget.EditText;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -34,13 +35,14 @@ public class MainActivity extends ActionBarActivity {
     ArrayList<String> numbers = new ArrayList<String>();
     public static ArrayList<String> activeUsers = new ArrayList<String>();
     String username;
-    String number;
-    static boolean locked;
+    static String number;
+    public static boolean locked = false;
     public TasksDbAdapter dbAdapter;
+    public static boolean refreshed = false;
+    public static FirebaseManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        locked = true;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final ActionBar actionBar = getActionBar();
@@ -48,6 +50,7 @@ public class MainActivity extends ActionBarActivity {
         dbAdapter = new TasksDbAdapter(this);
         dbAdapter.open();
 
+        //Easier than creating two more models for the db
         final SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(this);
         username = prefs.getString("username", null);
@@ -60,6 +63,9 @@ public class MainActivity extends ActionBarActivity {
             editor.commit();
         }
 
+        //If user does not have username stored in preferences
+        //Prompt for username
+        //This username will later be stored in the remote db
         if (username == null) {
             EditText input = new EditText(this);
             input.setId(1000);
@@ -127,7 +133,7 @@ public class MainActivity extends ActionBarActivity {
         };
 
         // Add 3 tabs, specifying the tab's text and TabListener
-        ArrayList<String> tabs = new ArrayList<String>(Arrays.asList("Now", "Later", "Friends"));
+        ArrayList<String> tabs = new ArrayList<String>(Arrays.asList("Now", "Later", "Scores"));
         for (int i = 0; i < 3; i++) {
             actionBar.addTab(actionBar.newTab().setText(tabs.get(i)).setTabListener(tabListener));
         }
@@ -136,15 +142,17 @@ public class MainActivity extends ActionBarActivity {
         if(number == null)
         {
             //for debug purposes only -- remove eventually
-            number = "2012807565";
+            number = "0000000000";
         }
 
-        Log.d("PHONE NUMBER:", number);
         contacts = getContacts();
         numbers = getNumbers(contacts);
-        Log.d("PAST CONTACTS:", "yeah");
-        FirebaseManager manager = new FirebaseManager(number, contacts);
+
+        //Remote DB handling
+        manager = new FirebaseManager(number, contacts);
         manager.setup(username);
+
+        //Store which friends are active on the app in a global var
         manager.getActiveUsers(numbers);
     }
 
@@ -152,7 +160,7 @@ public class MainActivity extends ActionBarActivity {
         for (String phone: activeUsers) {
             Log.d("Friends number", phone);
         }
-        locked = false;
+        activeUsers.add(number);
     }
 
 
@@ -184,30 +192,29 @@ public class MainActivity extends ActionBarActivity {
 
         LongTermTasksListFragment longTermFragment;
         ShortTermTasksListFragment shortTermFragment;
+        ScorboardListFragment scorBoardFragment;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
             shortTermFragment = new ShortTermTasksListFragment();
             longTermFragment = new LongTermTasksListFragment();
+            scorBoardFragment = new ScorboardListFragment();
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as 
-            // a static inner class below).
             if (position == 0) {
                 return shortTermFragment;
             } else if (position == 1) {
                 return longTermFragment;
             } else {
-                return new ScorboardListFragment();
+                return scorBoardFragment;
             }
         }
 
         @Override
         public int getCount() {
-            // Show 2 total pages.
             return 3;
         }
 
@@ -220,7 +227,7 @@ public class MainActivity extends ActionBarActivity {
                 case 1:
                     return getString(R.string.title_section2).toUpperCase(l);
                 case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
+                    return getString(R.string.title_section3).toUpperCase();
             }
             return null;
         }
@@ -262,8 +269,10 @@ public class MainActivity extends ActionBarActivity {
         return null;
     }
 
-//    @TODO: Perhaps needs to be async -- takes a little while to load at first
 
+
+    // Ideally would be async, but we would also have to handle the case when users click on the
+    // scoreboard tab before the scores are available.
     private ArrayList<String> getNumbers(ArrayList<HashMap<String, String>> contacts) {
         ArrayList<String> numbers = new ArrayList<String>();
         for (HashMap<String, String> contact: contacts) {
@@ -306,14 +315,12 @@ public class MainActivity extends ActionBarActivity {
                 e.printStackTrace();
             }
         }
-        Log.d("Contacts", "compiled");
         for (int i=0; i<contactData.size(); i++) {
             HashMap<String, String> map = contactData.get(i);
             for (HashMap.Entry<String, String> entry : map.entrySet()) {
                 Log.d("HashMap Entry", "Key = " + entry.getKey() + ", Value = " + entry.getValue());
             }
         }
-        Log.d("Contacts", "printed");
         return contactData;
     }
 
