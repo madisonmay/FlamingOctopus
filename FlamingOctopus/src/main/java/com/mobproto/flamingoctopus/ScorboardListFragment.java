@@ -2,6 +2,8 @@ package com.mobproto.flamingoctopus;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,18 +19,12 @@ public class ScorboardListFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        List<String> data = new ArrayList<String>();
-        ScorboardListAdapter adapter = new ScorboardListAdapter(getActivity(), R.layout.scoreboard_list_item, data);
-        adapter.add("9737659298");
-        adapter.add("2012807565");
-        adapter.add("5402095219");
-        adapter.add("0000000000");
-
+        List<String> data = MainActivity.activeUsers;
+        final ScorboardListAdapter adapter = new ScorboardListAdapter(getActivity(), R.layout.scoreboard_list_item, data);
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ListView listView = (ListView) rootView.findViewById(R.id.list);
         listView.setAdapter(adapter);
-        adapter = new ScorboardListAdapter(getActivity(), R.layout.scoreboard_list_item, data);
-        listView.setAdapter(adapter);
+
 
         return rootView;
     }

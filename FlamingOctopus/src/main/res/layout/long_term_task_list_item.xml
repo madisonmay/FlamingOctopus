@@ -1,29 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="fill_parent"
     android:layout_height="48dp">
 
-    <ImageButton
+
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/make_short_term_button"
-        android:src="@drawable/make_short" />
+        android:text="←"
+        android:id="@+id/make_short"
+        android:fontFamily="sans-serif-light"
+        android:layout_gravity="right"
+        android:background="#33B5E5"/>
+
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
         android:id="@+id/contents"
-        android:gravity="center_vertical"
+        android:gravity="center"
         android:layout_weight="1"
-        android:padding="4dp" />
+        android:padding="4dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:fontFamily="sans-serif-light"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Done"
-        android:id="@+id/done_button" />
+        android:text="✔"
+        android:id="@+id/done_button"
+        android:fontFamily="sans-serif-light"
+        android:layout_gravity="right"
+        android:layout_alignParentRight="true"
+        android:background="#33B5E5"/>
 
-</LinearLayout>
+</RelativeLayout>

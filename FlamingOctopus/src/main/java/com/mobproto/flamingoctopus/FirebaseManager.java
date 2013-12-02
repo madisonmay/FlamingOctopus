@@ -41,10 +41,12 @@ public class FirebaseManager {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.getValue() == null) {
+                    //new user
                     user.child("score").setValue(0);
                     user.child("name").setValue(username);
                     score = 0L;
                 } else {
+                    //returning user
                     score = (Long) ((HashMap) snapshot.getValue()).get("score");
                 }
             }
@@ -57,34 +59,39 @@ public class FirebaseManager {
 
 
     public void getActiveUsers(final ArrayList<String> phoneNumbers) {
-        users.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                Object value = snapshot.getValue();
-                if (value == null) {
-                   //users ref doesn't exist
-                } else {
-                    for (String phone: phoneNumbers) {
-                        Object user = ((Map) value).get(phone);
-                        if (user != null) {
-                            MainActivity.activeUsers.add(phone);
+        //get a list of app users who are in the user's contact list
+        if (!MainActivity.locked) {
+            users.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    Object value = snapshot.getValue();
+                    if (value == null) {
+                       //users ref doesn't exist
+                   } else {
+                        for (String phone: phoneNumbers) {
+                            Object user = ((HashMap) value).get(phone);
+                            if (user != null) {
+                                //add to list of app users who are in users contact list
+                                MainActivity.activeUsers.add(phone);
+                            }
                         }
+                        MainActivity.usersFound();
+                        MainActivity.locked = true;
                     }
-                    MainActivity.usersFound();
                 }
-            }
 
-            @Override
-            public void onCancelled(FirebaseError e) {
-            }
-        });
+                @Override
+                public void onCancelled(FirebaseError e) {
+                }
+            });
+        }
     }
 
     public boolean increment() {
         //increments users score by one when note is completed
         try {
             score++;
-            user.setValue(score);
+            user.child("score").setValue(score);
             return true; //if successful
         } catch (FirebaseException e) {
             e.printStackTrace();

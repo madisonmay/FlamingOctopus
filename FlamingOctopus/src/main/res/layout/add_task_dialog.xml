@@ -2,29 +2,36 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#eeeeee"
+    android:fontFamily="sans-serif-light">
 
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Create a new task:"
-        android:focusableInTouchMode="false" />
+        android:text="New Task"
+        android:focusableInTouchMode="false"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:fontFamily="sans-serif-light"/>
 
     <EditText
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:inputType="textMultiLine"
         android:id="@+id/new_task_edit_text"
         android:lines="3"
         android:maxLines="3"
-        android:minLines="3" />
+        android:minLines="3"
+        android:fontFamily="sans-serif-light"/>
 
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Later"
         android:id="@+id/long_term_check_box"
-        android:checked="false" />
+        android:checked="false"
+        android:fontFamily="sans-serif-light"/>
 </LinearLayout>
