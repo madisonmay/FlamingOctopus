@@ -188,11 +188,13 @@ public class MainActivity extends ActionBarActivity {
 
         LongTermTasksListFragment longTermFragment;
         ShortTermTasksListFragment shortTermFragment;
+        ScorboardListFragment scoreBoardFragment;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
             shortTermFragment = new ShortTermTasksListFragment();
             longTermFragment = new LongTermTasksListFragment();
+            scoreBoardFragment = new ScorboardListFragment();
         }
 
         @Override
@@ -203,7 +205,7 @@ public class MainActivity extends ActionBarActivity {
             } else if (position == 1) {
                 return longTermFragment;
             } else {
-                return scorBoardFragment;
+                return scoreBoardFragment;
             }
         }
 
