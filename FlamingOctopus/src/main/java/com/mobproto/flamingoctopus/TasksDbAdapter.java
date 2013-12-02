@@ -45,7 +45,6 @@ public class TasksDbAdapter {
 
         Task task = new Task(id, contents, longTerm);
 
-        Log.d("created task", task.toString());
         return task;
     }
 

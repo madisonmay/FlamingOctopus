@@ -1,7 +1,6 @@
 package com.mobproto.flamingoctopus;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +66,6 @@ public class ScorboardListAdapter extends ArrayAdapter {
         });
 
         // ...
-
         return v;
     }
 }

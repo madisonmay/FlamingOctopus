@@ -1,7 +1,5 @@
 package com.mobproto.flamingoctopus;
 
-import android.util.Log;
-
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -33,7 +31,6 @@ public class FirebaseManager {
     public void setup(final String username) {
         //Initialize firebase connection
         // Create a reference to a Firebase location
-        Log.d("Setup", "Triggered");
         Firebase ref = new Firebase("https://flamingoctopus.firebaseIO.com/");
         this.ref = ref;
         this.users = ref.child("users");
@@ -66,12 +63,10 @@ public class FirebaseManager {
                 Object value = snapshot.getValue();
                 if (value == null) {
                    //users ref doesn't exist
-                    Log.d("Serious error", "abort, abort!");
                 } else {
                     for (String phone: phoneNumbers) {
                         Object user = ((Map) value).get(phone);
                         if (user != null) {
-                            Log.d("Active User", phone);
                             MainActivity.activeUsers.add(phone);
                         }
                     }

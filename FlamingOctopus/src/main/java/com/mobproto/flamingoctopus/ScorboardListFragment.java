@@ -2,7 +2,6 @@ package com.mobproto.flamingoctopus;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +18,7 @@ public class ScorboardListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         List<String> data = new ArrayList<String>();
-        Log.d("onCreateview", "bounceit");
-        final ScorboardListAdapter adapter = new ScorboardListAdapter(getActivity(), R.layout.scoreboard_list_item, data);
+        ScorboardListAdapter adapter = new ScorboardListAdapter(getActivity(), R.layout.scoreboard_list_item, data);
         adapter.add("9737659298");
         adapter.add("2012807565");
         adapter.add("5402095219");
@@ -28,6 +26,8 @@ public class ScorboardListFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ListView listView = (ListView) rootView.findViewById(R.id.list);
+        listView.setAdapter(adapter);
+        adapter = new ScorboardListAdapter(getActivity(), R.layout.scoreboard_list_item, data);
         listView.setAdapter(adapter);
 
         return rootView;

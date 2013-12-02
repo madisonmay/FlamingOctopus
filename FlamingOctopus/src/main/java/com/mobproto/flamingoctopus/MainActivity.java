@@ -16,7 +16,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -125,7 +124,7 @@ public class MainActivity extends ActionBarActivity {
         };
 
         // Add 2 tabs, specifying the tab's text and TabListener
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
             actionBar.addTab(
                     actionBar.newTab()
                             .setText("Tab " + (i + 1))
@@ -138,19 +137,14 @@ public class MainActivity extends ActionBarActivity {
             //for debug purposes only -- remove eventually
             number = "2012807565";
         }
-        Log.d("PHONE NUMBER:", number);
         contacts = getContacts();
         numbers = getNumbers(contacts);
-        Log.d("PAST CONTACTS:", "yeah");
         FirebaseManager manager = new FirebaseManager(number, contacts);
         manager.setup(username);
         manager.getActiveUsers(numbers);
     }
 
     static void usersFound() {
-        for (String phone: activeUsers) {
-            Log.d("Friends number", phone);
-        }
         locked = false;
     }
 
@@ -183,11 +177,13 @@ public class MainActivity extends ActionBarActivity {
 
         LongTermTasksListFragment longTermFragment;
         ShortTermTasksListFragment shortTermFragment;
+        ScorboardListFragment scoreboardFragment;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
             shortTermFragment = new ShortTermTasksListFragment();
             longTermFragment = new LongTermTasksListFragment();
+            scoreboardFragment = new ScorboardListFragment();
         }
 
         @Override
@@ -197,6 +193,8 @@ public class MainActivity extends ActionBarActivity {
                 return shortTermFragment;
             } else if (position == 1) {
                 return longTermFragment;
+            } else if (position == 2) {
+                return scoreboardFragment;
             } else {
                 return null;
             }
@@ -205,7 +203,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public int getCount() {
             // Show 2 total pages.
-            return 2;
+            return 3;
         }
 
         @Override
@@ -297,18 +295,14 @@ public class MainActivity extends ActionBarActivity {
                     phones.close();
                 }
             }catch(Exception e){
-                Log.d("Error triggered", "!");
                 e.printStackTrace();
             }
         }
-        Log.d("Contacts", "compiled");
         for (int i=0; i<contactData.size(); i++) {
             HashMap<String, String> map = contactData.get(i);
             for (HashMap.Entry<String, String> entry : map.entrySet()) {
-                Log.d("HashMap Entry", "Key = " + entry.getKey() + ", Value = " + entry.getValue());
             }
         }
-        Log.d("Contacts", "printed");
         return contactData;
     }
 
